@@ -40,22 +40,10 @@ public class MainActivity extends ActionBarActivity {
 		resolveIntent(getIntent());
 		
 		mNFCadapter = NfcAdapter.getDefaultAdapter(this);
-		
-		if(mNFCadapter != null){
-			mTextView.setText("Read a Tag");
-		} else{
-			mTextView.setText("NFC Reading not enabled");
-		}
-		
-		if(!mNFCadapter.isEnabled()){
-			mTextView.setText("NFC is disabled");
-		}
-		
+				
 		mPending = PendingIntent.getActivity(this, 0, 
 				new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-		
-		
-		
+				
 	}
 	
 	private void resolveIntent(Intent intent) {
@@ -78,28 +66,30 @@ public class MainActivity extends ActionBarActivity {
 
 	protected void onResume(){		
 		super.onResume();
+		
+		if(mNFCadapter != null){
+			mTextView.setText("Read a Tag");
+		} else{
+			mTextView.setText("NFC Reading not enabled");
+		}
+		
+		if(!mNFCadapter.isEnabled()){
+			mTextView.setText("NFC is disabled");
+		}
+		
 		mNFCadapter.enableForegroundDispatch(this, mPending, null, null);
-		Log.i(TAG, "onResume!");		
-				
+		Log.i(TAG, "onResume!");					
 	}
-	
+		
 	protected void onPause(){
 		super.onPause();
 		Log.i(TAG,"onPause()");
-		mNFCadapter.disableForegroundDispatch(this);	
+		if(mNFCadapter != null){
+			mNFCadapter.disableForegroundDispatch(this);
+		}			
 	}
 	
-	protected void onStop(){
-		super.onStop();
-		Log.i(TAG, "onStop()");
-	}
-	
-	protected void onDestroy(){
-		super.onDestroy();
-		Log.i(TAG, "onDestroy()");
-	}
-	
-		
+			
 	protected void onNewIntent(Intent intent){
 		super.onNewIntent(intent);
 		setIntent(intent);
