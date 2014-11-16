@@ -41,13 +41,14 @@ public class MainActivity extends ActionBarActivity {
 		idValue = new TextView(this);
 		mLayout.addView(idValue);
 		
-		resolveIntent(getIntent());
+//		resolveIntent(getIntent());
 		
 		mNFCadapter = NfcAdapter.getDefaultAdapter(this);
 				
 		mPending = PendingIntent.getActivity(this, 0, 
 				new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-				
+		
+		resolveIntent(getIntent());
 	}
 	
 	private void resolveIntent(Intent intent) {
@@ -78,7 +79,8 @@ public class MainActivity extends ActionBarActivity {
 				.setContentTitle("Here is your ID (in hex)")
 //				.setContentText(Long.toString(temp))
 				.setContentText(Long.toHexString(temp))
-				.setSmallIcon(android.R.drawable.star_on)
+				.setSmallIcon(android.R.drawable.ic_dialog_info)
+				.setContentIntent(mPending)
 				.setAutoCancel(true);
 		
 		NotificationManager mManager = (NotificationManager) getSystemService(
