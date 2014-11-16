@@ -5,9 +5,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.nfc.*;
+
 //For options menu
 //import android.view.Menu;
 //import android.view.MenuItem;
@@ -16,7 +20,7 @@ import android.nfc.*;
 public class MainActivity extends ActionBarActivity {
 	
 	private static String TAG = "MainActivity";
-//	private static final int NOTIFICATION_ID = 2;
+	private static final int NOTIFICATION_ID = 2;
 	private NfcAdapter mNFCadapter;
 	private TextView mTextView;
 	private PendingIntent mPending;
@@ -58,11 +62,30 @@ public class MainActivity extends ActionBarActivity {
 				Log.i(TAG, Long.toString(temp));
 				mTextView.setText("The ID of the Tag (in dec): ");
 				idValue.setText(Long.toString(temp));
+				makeNotify(temp);
 
 			}							
 		}
 	}
 
+
+	private void makeNotify(long temp) {
+		// TODO Auto-generated method stub
+		
+		Notification.Builder notificationBuilder = new Notification.Builder(
+				getApplicationContext())
+				.setTicker("You scanned a Tag!")
+				.setContentTitle("Here is your ID (in hex)")
+//				.setContentText(Long.toString(temp))
+				.setContentText(Long.toHexString(temp))
+				.setSmallIcon(android.R.drawable.star_on)
+				.setAutoCancel(true);
+		
+		NotificationManager mManager = (NotificationManager) getSystemService(
+				Context.NOTIFICATION_SERVICE);
+		mManager.notify(NOTIFICATION_ID, notificationBuilder.build());
+		
+	}
 
 	protected void onResume(){		
 		super.onResume();
