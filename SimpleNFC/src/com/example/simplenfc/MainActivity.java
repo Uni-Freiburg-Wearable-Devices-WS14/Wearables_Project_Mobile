@@ -1,6 +1,7 @@
 package com.example.simplenfc;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.LinearLayout;
@@ -39,7 +40,8 @@ public class MainActivity extends ActionBarActivity {
 		mLayout = (LinearLayout) findViewById(R.id.nfc_layout);
 		mTextView = (TextView) findViewById(R.id.textView1);
 		idValue = new TextView(this);
-		mLayout.addView(idValue);
+		mLayout.addView(idValue);		
+		idValue.setText("nothing to display...");
 		
 //		resolveIntent(getIntent());
 		
@@ -58,15 +60,27 @@ public class MainActivity extends ActionBarActivity {
 					
 			byte[] id = getIntent().getByteArrayExtra(NfcAdapter.EXTRA_ID);
 			if(id != null){
-
+				Log.i(TAG, "EXTRA_ID detected");
 				long temp = getDec(id);
 				Log.i(TAG, Long.toString(temp));
 				mTextView.setText("The ID of the Tag (in dec): ");
 				idValue.setText(Long.toString(temp));
 				makeNotify(temp);
 
-			}							
-		}
+			}
+			
+		//For reading NDEF Messages; Tag is written!
+		} else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+	        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+	        if (rawMsgs != null) {
+	            NdefMessage[] msgs = new NdefMessage[rawMsgs.length];
+	            Log.i(TAG, String.valueOf(rawMsgs.length));
+	            for (int i = 0; i < rawMsgs.length; i++) {
+	                msgs[i] = (NdefMessage) rawMsgs[i];
+	            }
+	            Log.i(TAG,"NDEF detected! " + msgs.toString());
+	        }
+	    }
 	}
 
 
@@ -80,6 +94,7 @@ public class MainActivity extends ActionBarActivity {
 //				.setContentText(Long.toString(temp))
 				.setContentText(Long.toHexString(temp))
 				.setSmallIcon(android.R.drawable.ic_dialog_info)
+				
 				.setContentIntent(mPending)
 				.setAutoCancel(true);
 		
@@ -93,9 +108,9 @@ public class MainActivity extends ActionBarActivity {
 		super.onResume();
 		
 		if(mNFCadapter != null){
-			mTextView.setText("Read a Tag");
+//			mTextView.setText("Read a Tag");
 		} else{
-			mTextView.setText("NFC Reading not enabled");
+			mTextView.setText("NFC Reading not supported");
 		}
 		
 		if(!mNFCadapter.isEnabled()){
