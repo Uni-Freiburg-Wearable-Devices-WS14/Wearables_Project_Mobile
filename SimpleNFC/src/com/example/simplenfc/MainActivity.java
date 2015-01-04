@@ -25,6 +25,7 @@ public class MainActivity extends ActionBarActivity {
 	private NfcAdapter mNFCadapter;
 	private TextView mTextView;
 	private PendingIntent mPending;
+	Intent serviceIntent = null;
 	
 	LinearLayout mLayout;
 	private TextView idValue;
@@ -43,12 +44,17 @@ public class MainActivity extends ActionBarActivity {
 		mLayout.addView(idValue);		
 		idValue.setText("nothing to display...");
 		
-//		resolveIntent(getIntent());
+//		serviceIntent = new Intent(getApplicationContext(), 
+//				ReaderService.class);
+		
+		resolveIntent(getIntent());
 		
 		mNFCadapter = NfcAdapter.getDefaultAdapter(this);
 				
 		mPending = PendingIntent.getActivity(this, 0, 
 				new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+		
+//		startService(serviceIntent);
 		
 		resolveIntent(getIntent());
 	}
@@ -129,6 +135,12 @@ public class MainActivity extends ActionBarActivity {
 		}			
 	}
 	
+	protected void onDestroy(){
+		super.onDestroy();
+		Log.i(TAG, "onDestroy()");
+		stopService(serviceIntent);
+	}
+	
 			
 	protected void onNewIntent(Intent intent){
 		super.onNewIntent(intent);
@@ -148,6 +160,8 @@ public class MainActivity extends ActionBarActivity {
     }
     return result;		
 	}
+	
+	
 	
 	//Options menu, till now not needed!
 //	@Override
