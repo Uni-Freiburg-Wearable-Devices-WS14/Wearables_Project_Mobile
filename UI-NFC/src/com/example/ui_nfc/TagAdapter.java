@@ -1,7 +1,6 @@
 package com.example.ui_nfc;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Context;
 import android.util.Log;

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.example.ui_nfc.DatabaseHelper;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 
 // Activity for displaying all the TAGs and adding one and so on...
