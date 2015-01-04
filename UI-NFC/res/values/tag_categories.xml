@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tag_categories">
+        <item >Door</item>
+        <item >Thing</item>        
+    </string-array>
+    
+</resources>
