@@ -79,13 +79,7 @@ public class MainActivity extends Activity {
 		startActivityForResult(intent, EDIT_TAG_REQUEST);
 	}
 	
-//	public void updateEntry(Tag mTag){
-//		//TODO
-//	}
-//	
-//	public void deleteEntry(Tag mTag){
-//		//TODO
-//	}
+
 	
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent values){

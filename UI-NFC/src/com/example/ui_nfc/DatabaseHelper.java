@@ -161,6 +161,23 @@ import android.util.Log;
 			
 			return tagList;		
 		}
+
+		public boolean idCheck(int newId) {
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor cursor = null;
+			cursor = db.rawQuery(" SELECT * FROM " + TAG_TABLE_NAME, null);
+			
+			if(cursor.moveToFirst()){
+				do{					
+					int oldId = cursor.getInt(cursor.getColumnIndex(KEY_TAG_ID));
+					Log.i(TAG, "id to check: " + Integer.valueOf(newId).toString() + 
+							" actual id: " + Integer.valueOf(oldId).toString());
+					if(oldId == newId) return false;
+				} while(cursor.moveToNext());
+				
+			}
+			return true;
+		}
 		
 	}
 	

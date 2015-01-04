@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.database.Cursor;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 // The Activity, which gets called, when I want to add or edit a Tag
@@ -29,6 +31,7 @@ public class AddTagActivity extends Activity {
 	private PendingIntent mPending;
 	private NfcAdapter mNFCadapter;
 	private Boolean newElement;
+	private DatabaseHelper db;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,6 +49,7 @@ public class AddTagActivity extends Activity {
 								
 		oldData = getIntent().getExtras();		
 		tmpTag = new Tag();
+		db = new DatabaseHelper(getApplicationContext());
 		
 		//edit an existing item, pass the data to oldTag
 		if(oldData != null){
@@ -89,8 +93,15 @@ public class AddTagActivity extends Activity {
 			byte[] id = getIntent().getByteArrayExtra(NfcAdapter.EXTRA_ID);
 			if(id != null){
 				int tmp = getDec(id);
-				Log.i(TAG, "the id in int is: " + Integer.toString(tmp));
-				tmpID.setText(Integer.toString(tmp));
+				if(db.idCheck(tmp)) tmpID.setText(Integer.toString(tmp));
+				else {
+					Toast errorToast = Toast.makeText(getApplicationContext(), 
+							"You allready have a Tag with this ID in your database", Toast.LENGTH_SHORT);
+					errorToast.show();
+					
+					mDialog.dismiss();
+					finish();
+				}
 			}
 			mDialog.dismiss();
 			}
@@ -98,8 +109,10 @@ public class AddTagActivity extends Activity {
 	}
 
 
-	private int getDec(byte[] bytes) {
-		// TODO Auto-generated method stub
+
+
+
+	private int getDec(byte[] bytes) {		
 	int result = 0;
     int factor = 1;
     for (int i = 0; i < bytes.length; ++i) {
