@@ -55,7 +55,7 @@ public class AddTagActivity extends Activity {
 		if(oldData != null){
 			Log.i(TAG, "edit Tag, I fetch the data");
 			newElement = false;
-			
+			//assign the values to the tmpTag
 			tmpTag.setTagID(oldData.getInt("tag_id"));			
 			tmpTag.setItemID(oldData.getInt("item_id"));
 			tmpTag.setTagName(oldData.getString("tag_name"));
@@ -63,9 +63,11 @@ public class AddTagActivity extends Activity {
 			tmpTag.setScanDateInMillis(oldData.getLong("last_scan"));
 			tmpTag.setWearing(oldData.getBoolean("at_human"));
 			tmpTag.setCategory(oldData.getString("tag_category"));
-			
+			//proper assignment of the layout parts
 			tmpID.setText(Integer.valueOf(tmpTag.getTagID()).toString());
 			tmpName.setText(tmpTag.getTagName());
+			mSpinner.setSelection(adapter.getPosition(tmpTag.getCategory()));
+			
 		} else{
 			Log.i(TAG, "new Tag, wait for scan!!!");
 			newElement = true;
@@ -133,7 +135,7 @@ public class AddTagActivity extends Activity {
 		
 		data.putString("tag_name", tmpTag.getTagName());		
 		data.putInt("tag_id", tmpTag.getTagID());
-		data.putString("tag_category", tmpTag.getCategory());
+		data.putString("tag_category", tmpTag.getCategory());		
 		
 		data.putInt("item_id", tmpTag.getItemID());
 		data.putBoolean("reminder", tmpTag.shouldRemind());

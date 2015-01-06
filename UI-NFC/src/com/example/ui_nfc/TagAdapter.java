@@ -68,7 +68,7 @@ public class TagAdapter extends ArrayAdapter<Tag> {
 					} else tempTag.setRemind(isChecked);
 					
 					db.updateItem(tempTag);					
-					Log.i(TAG, "reminder toggled" + tempTag.shouldRemind());
+					Log.i(TAG, "reminder toggled for " + tempTag.getTagName() + " to " + tempTag.shouldRemind());
 					
 					//perhaps...
 					//((MainActivity) thiscontext).refreshListView();
