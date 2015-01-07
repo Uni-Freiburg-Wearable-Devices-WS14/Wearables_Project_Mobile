@@ -3,7 +3,7 @@ package com.example.ui_nfc;
 import java.util.Calendar;
 
 // a class, for describing the TAG itself, with all its entities
-public class Tag {
+public class NfcTag {
 	
 	//members of the Tag
 //	public static final String ITEM_ID = "item_id";
@@ -23,9 +23,9 @@ public class Tag {
 	private boolean atHuman;
 	private String category;
 	
-	public Tag(){ ; }
+	public NfcTag(){ ; }
 	
-	public Tag(int itemID, int tagID, String tagName, boolean remindMe,
+	public NfcTag(int itemID, int tagID, String tagName, boolean remindMe,
 			long scanDate, boolean atHuman, String category){
 		super();
 		this.itemID = itemID;

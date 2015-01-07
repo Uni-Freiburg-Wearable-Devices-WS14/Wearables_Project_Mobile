@@ -16,15 +16,15 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class TagAdapter extends ArrayAdapter<Tag> {
+public class TagAdapter extends ArrayAdapter<NfcTag> {
 	
 	private static final String TAG = "TagAdapter";
 	private LayoutInflater inflater;
 	private Context thiscontext;
 	private int layout;
-	private ArrayList<Tag> tagList;	
+	private ArrayList<NfcTag> tagList;	
 
-	public TagAdapter(Context context, int resource, ArrayList<Tag> objects) {
+	public TagAdapter(Context context, int resource, ArrayList<NfcTag> objects) {
 		super(context, resource, objects);
 		
 		this.inflater = LayoutInflater.from(context);
@@ -61,7 +61,7 @@ public class TagAdapter extends ArrayAdapter<Tag> {
 					// TODO Implement it!!!
 					// TODO Implement the method updateEntry(Tag mtag) in MainActivity
 					DatabaseHelper db = new DatabaseHelper(thiscontext);
-					Tag tempTag = tagList.get(position);
+					NfcTag tempTag = tagList.get(position);
 //					boolean state = tempTag.shouldRemind();					
 					if(isChecked){
 						tempTag.setRemind(isChecked);
@@ -87,7 +87,7 @@ public class TagAdapter extends ArrayAdapter<Tag> {
 				public void onClick(View v) {
 					// TODO implement the method deleteEntry(Tag mtag)
 					DatabaseHelper db = new DatabaseHelper(thiscontext);
-					Tag tempTag = tagList.get(position);
+					NfcTag tempTag = tagList.get(position);
 					
 					db.deleteItem(tempTag);
 					
@@ -101,7 +101,7 @@ public class TagAdapter extends ArrayAdapter<Tag> {
 				@Override
 				public void onClick(View v) {
 					// TODO implement the method editEntry(Tag mtag)
-					Tag tempTag = tagList.get(position);
+					NfcTag tempTag = tagList.get(position);
 					((MainActivity) thiscontext).editEntry(tempTag);					
 				}
 			});
@@ -109,7 +109,7 @@ public class TagAdapter extends ArrayAdapter<Tag> {
 			convertView.setTag(holder);
 		}
 		
-		Tag tempTag = tagList.get(position);
+		NfcTag tempTag = tagList.get(position);
 		
 		holder.name.setText(tempTag.getTagName());
 		holder.reminder.setChecked(tempTag.shouldRemind());

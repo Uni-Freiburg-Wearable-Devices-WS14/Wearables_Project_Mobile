@@ -6,7 +6,10 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.database.Cursor;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.NfcA;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -21,7 +24,7 @@ public class AddTagActivity extends Activity {
 	
 	private static final String TAG = "AddTagActivity";
 	private Bundle oldData;
-	Tag tmpTag;
+	NfcTag tmpTag;
 	
 //	private Bundle data;
 	private DialogFragment mDialog;
@@ -48,7 +51,7 @@ public class AddTagActivity extends Activity {
 		mSpinner.setAdapter(adapter);
 								
 		oldData = getIntent().getExtras();		
-		tmpTag = new Tag();
+		tmpTag = new NfcTag();
 		db = new DatabaseHelper(getApplicationContext());
 		
 		//edit an existing item, pass the data to oldTag
@@ -90,21 +93,35 @@ public class AddTagActivity extends Activity {
 			setIntent(intent);
 			Log.i(TAG, "in onNewIntent!");
 			
-			if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-			Log.i(TAG, "You have a Tag!!!");
-			byte[] id = getIntent().getByteArrayExtra(NfcAdapter.EXTRA_ID);
-			if(id != null){
-				int tmp = getDec(id);
-				if(db.idCheck(tmp)) tmpID.setText(Integer.toString(tmp));
-				else {
+			if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){					
+			Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+			if(checkTech(tag)){
+				Log.i(TAG, "you got it!");
+				byte[] id = getIntent().getByteArrayExtra(NfcAdapter.EXTRA_ID);
+				if(id != null){
+					int tmp = getDec(id);
+					if(db.idCheck(tmp)) tmpID.setText(Integer.toString(tmp));
+					else {
+						Toast errorToast = Toast.makeText(getApplicationContext(), 
+								"You allready have a Tag with this ID in your database", Toast.LENGTH_SHORT);
+						errorToast.show();					
+						finish();
+					}
+				} else {
+					//case: ID of the Tag isn't readable
 					Toast errorToast = Toast.makeText(getApplicationContext(), 
-							"You allready have a Tag with this ID in your database", Toast.LENGTH_SHORT);
+							"Your Tag has no readable ID, please attach a proper Tag", Toast.LENGTH_SHORT);
 					errorToast.show();
-					
-					mDialog.dismiss();
 					finish();
 				}
-			}
+			} else {
+				//case: Tag is not of type NfcA
+				Toast errorToast = Toast.makeText(getApplicationContext(), 
+						"Your Tag has the wrong technology!", Toast.LENGTH_SHORT);
+				errorToast.show();
+				finish();
+			}		
 			mDialog.dismiss();
 			}
 		}		
@@ -112,6 +129,15 @@ public class AddTagActivity extends Activity {
 
 
 
+
+
+	private boolean checkTech(Tag mtag) {
+		String[] techlist = mtag.getTechList();
+		for(String tech : techlist){
+			if(tech.equals(NfcA.class.getName())) return true;
+		}		
+		return false;
+	}
 
 
 	private int getDec(byte[] bytes) {		

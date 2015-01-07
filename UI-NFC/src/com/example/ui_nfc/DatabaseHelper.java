@@ -56,7 +56,7 @@ import android.util.Log;
 		}
 		
 		//add a new Tag item
-		public Tag addItem(Tag item){
+		public NfcTag addItem(NfcTag item){
 			//TODO
 			SQLiteDatabase db = this.getWritableDatabase();
 			Log.i(TAG, "addItem");
@@ -76,7 +76,7 @@ import android.util.Log;
 		}
 		
 		//updates an existing Tag item
-		public int updateItem(Tag item){
+		public int updateItem(NfcTag item){
 			//TODO
 			int rows = 0;
 			SQLiteDatabase db = getWritableDatabase();
@@ -101,7 +101,7 @@ import android.util.Log;
 		}
 		
 		//deletes a single Tag
-		public int deleteItem(Tag item){
+		public int deleteItem(NfcTag item){
 			//TODO
 			int rows = 0;
 			SQLiteDatabase db = getWritableDatabase();
@@ -129,10 +129,10 @@ import android.util.Log;
 		
 		
 		//returns all Tag items in the DB
-		public ArrayList<Tag> getAllItems(){
+		public ArrayList<NfcTag> getAllItems(){
 //			//TODO
 			SQLiteDatabase db = this.getReadableDatabase();
-			ArrayList<Tag> tagList = new ArrayList<Tag>();
+			ArrayList<NfcTag> tagList = new ArrayList<NfcTag>();
 			Cursor cursor = null;
 			
 			Log.i(TAG, "in getAllItems()");
@@ -142,7 +142,7 @@ import android.util.Log;
 			
 			if (cursor.moveToFirst()){
 				do{
-					Tag item = new Tag();
+					NfcTag item = new NfcTag();
 					item.setItemID(Integer.parseInt(cursor.getString(0)));
 					item.setTagID(Integer.parseInt(cursor.getString(1)));
 					item.setTagName(cursor.getString(2));

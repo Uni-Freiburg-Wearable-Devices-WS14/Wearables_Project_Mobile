@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
 	private static final int EDIT_TAG_REQUEST = 2;
 //	NFC_Adapter mAdapter;
 
-	private ArrayList<Tag> tagList;
+	private ArrayList<NfcTag> tagList;
 	private ListView lv;
 	private DatabaseHelper db;
 //	private TextView header;
@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
 		LayoutInflater inflater = LayoutInflater.from(this);
 		View v = inflater.inflate(R.layout.activity_main, null);
 		setContentView(v);				
-		tagList = new ArrayList<Tag>();
+		tagList = new ArrayList<NfcTag>();
 		db = new DatabaseHelper(this);
 		
 		lv = (ListView) findViewById(R.id.tagList);
@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
 	public void refreshListView() {		
 		tagList = db.getAllItems();
 		
-		ArrayAdapter<Tag> mAdapter = new TagAdapter(MainActivity.this, 
+		ArrayAdapter<NfcTag> mAdapter = new TagAdapter(MainActivity.this, 
 				R.layout.tag_item, tagList);
 		lv.setAdapter(mAdapter);
 	}
@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
 		startActivityForResult(clickIntent, NEW_TAG_REQUEST);
 	}
 	
-	public void editEntry(Tag mTag){
+	public void editEntry(NfcTag mTag){
 		
 		Intent intent = new Intent(MainActivity.this, AddTagActivity.class);
 		Bundle data = new Bundle();
@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent values){
 		//TODO
 		DatabaseHelper db = new DatabaseHelper(MainActivity.this);
-		Tag mTag = new Tag();
+		NfcTag mTag = new NfcTag();
 		Bundle data;
 		
 		switch(resultCode){
