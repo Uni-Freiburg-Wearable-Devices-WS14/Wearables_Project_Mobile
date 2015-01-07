@@ -26,7 +26,7 @@ public class AddTagActivity extends Activity {
 	private Bundle oldData;
 	NfcTag tmpTag;
 	
-//	private Bundle data;
+//	private Bundle data;blabla
 	private DialogFragment mDialog;
 	private Spinner mSpinner;
 	TextView tmpID;
