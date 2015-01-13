@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ListView
+        android:id="@+id/tagList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/connectionButton"
+        android:layout_below="@+id/headerText"
+        android:layout_centerHorizontal="true"
+        tools:listitem="@layout/tag_item" >
+
+    </ListView>
+
+    <TextView
+        android:id="@+id/headerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="23sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"        
+        android:text="@string/title" />
+    
+    <Button
+        android:id="@+id/connectionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"       
+        android:layout_alignParentBottom="true"        
+        android:layout_centerHorizontal="true"
+        android:text="@string/connectButton_text" />
+
+</RelativeLayout>

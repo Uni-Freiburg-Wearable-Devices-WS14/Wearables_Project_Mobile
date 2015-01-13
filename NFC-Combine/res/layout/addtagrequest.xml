@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+     <TextView
+        android:id="@+id/TagIdLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"        
+        android:text="@string/IdLabel" >
+    </TextView>
+
+     <TextView
+         android:id="@+id/TagID"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentTop="true"
+         android:layout_toRightOf="@+id/TagIdLabel"
+         android:layout_marginLeft="5dp"
+         android:text="@string/ID" />
+   
+     <!-- Name field -->
+     
+     <TextView
+         android:id="@+id/NameText"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content" 
+         android:layout_alignParentLeft="true"
+     	 android:layout_below="@+id/TagIdLabel"
+     	 android:layout_marginTop="15dp"
+     	 android:textSize="20sp"
+     	 android:text="@string/NameText" />
+     
+     <EditText
+        android:id="@+id/NameField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/NameText"
+        android:layout_marginTop="5dp"
+        android:ems="10"
+        android:hint="@string/enter_name_string" 
+        android:inputType="textShortMessage">
+     
+     <!-- 	<requestFocus />   -->
+    </EditText>
+
+     <TextView
+         android:id="@+id/spinner_text"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:layout_below="@+id/NameField"
+         android:text="@string/spinnerText"
+         android:textSize="20sp" />
+
+     <Spinner
+         android:id="@+id/category_spinner"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:layout_below="@+id/spinner_text" />
+
+     <Button
+         android:id="@+id/btn_save"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_alignParentLeft="true"
+         android:onClick="onClick"
+         android:text="@string/btnSaveText" />
+
+     <Button
+         android:id="@+id/btn_cancel"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_alignParentRight="true"
+         android:onClick="onClick"
+         android:text="@string/btnCancelText" />
+     	
+</RelativeLayout>
