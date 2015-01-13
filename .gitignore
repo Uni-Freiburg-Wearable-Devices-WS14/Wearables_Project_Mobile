@@ -1,3 +1,57 @@
+
+#Jenv file
+.java-version
+ 
+# built application files
+*.apk
+*.ap_
+*.jar
+ 
+# lint folder
+lint
+ 
+# files for the dex VM
+*.dex
+ 
+# Java class files
+*.class
+ 
+# generated files
+bin/
+gen/
+classes/
+gen-external-apklibs/
+javadoc/ 
+# maven output folder
+target
+ 
+# Local configuration file (sdk path, etc)
+local.properties
+ 
+# Eclipse project files
+.classpath
+.project
+.metadata
+.settings
+ 
+# IntelliJ files
+.idea
+*.iml
+
+# vi swap files
+*.swp
+ 
+# backup files
+*.bak
+ 
+# gradle directory
+.gradle
+#gradlew
+#gradlew.bat
+#gradle/
+!/gradle/**
+build/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -44,3 +98,4 @@ Temporary Items
 
 ~$Intro_Presentation.pptx
 ~$Intro_Presentation_seriously.pptx
+*.classpath
