@@ -25,6 +25,8 @@ import android.util.Log;
 		public static final String KEY_CATEGORY = "tag_category";
 		public static final String KEY_SCAN = "last_scan";
 		public static final String KEY_WEARING = "at_human";
+
+        private static final String[] TAG_ID_COLUMN = { KEY_TAG_ID };
 		
 		private static final String DATABASE_CREATE = "CREATE TABLE "
 				+ TAG_TABLE_NAME	+ "( " 
@@ -127,10 +129,9 @@ import android.util.Log;
 			return rows;
 		}
 		
-		
 		//returns all Tag items in the DB
 		public ArrayList<NfcTag> getAllItems(){
-//			//TODO
+			//TODO
 			SQLiteDatabase db = this.getReadableDatabase();
 			ArrayList<NfcTag> tagList = new ArrayList<NfcTag>();
 			Cursor cursor = null;
@@ -178,6 +179,25 @@ import android.util.Log;
 			}
 			return true;
 		}
+
+        /**
+         * @param mIdToCheck of the status we are looking for
+         * @return Type of the TAG
+         */
+        public boolean checkIfObject(int mIdToCheck) {
+            SQLiteDatabase db = this.getReadableDatabase(); // Or should it be Writable?
+            Cursor mCursor = null;
+            mCursor = db.query(TAG_TABLE_NAME, TAG_ID_COLUMN, KEY_TAG_ID + "=" + mIdToCheck,
+                    null, null, null, null);
+            return mCursor.moveToNext() ? mCursor.getString(0) : null;
+
+
+            return false;
+        }
+
+        /*public ArrayList<NfcTag> getItemsToRemind() {
+
+        }*/
 		
 	}
 	

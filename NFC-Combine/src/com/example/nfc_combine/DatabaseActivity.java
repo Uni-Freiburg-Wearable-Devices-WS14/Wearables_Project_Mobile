@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import com.example.bluetooth.BluetoothActivity;
 import com.example.nfc_combine.DatabaseHelper;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -75,7 +77,6 @@ public class DatabaseActivity extends Activity {
 	}
 	
 	public void editEntry(NfcTag mTag){
-		
 		Intent intent = new Intent(DatabaseActivity.this, AddTagActivity.class);
 		Bundle data = new Bundle();
 		
@@ -91,10 +92,7 @@ public class DatabaseActivity extends Activity {
 		
 		startActivityForResult(intent, EDIT_TAG_REQUEST);
 	}
-	
 
-	
-	
 	protected void onActivityResult(int requestCode, int resultCode, Intent values){
 		//TODO
 		DatabaseHelper db = new DatabaseHelper(DatabaseActivity.this);
@@ -111,7 +109,7 @@ public class DatabaseActivity extends Activity {
 			switch(requestCode){
 			case NEW_TAG_REQUEST:				
 				Log.i(TAG, "New Tag Request");
-				//TODO
+				//TODO: Make successful writing of a Tag
 				data = values.getExtras();
 				if(data != null){
 					mTag.setTagID(data.getInt("tag_id"));
@@ -120,13 +118,10 @@ public class DatabaseActivity extends Activity {
 					mTag.setCategory(data.getString("tag_category"));
 					mTag.setRemind(data.getBoolean("reminder"));
 					mTag.setWearing(data.getBoolean("at_human"));
-					
 					//add mTag to database
 					mTag = db.addItem(mTag);
-					
-					refreshListView();
+                    refreshListView();
 				}
-				
 				break;
 				
 			case EDIT_TAG_REQUEST:
@@ -140,10 +135,8 @@ public class DatabaseActivity extends Activity {
 					mTag.setScanDateInMillis(data.getLong("last_scan"));
 					mTag.setWearing(data.getBoolean("at_human"));
 					mTag.setCategory(data.getString("tag_category"));
-					
 					//update the database
 					db.updateItem(mTag);
-					
 					refreshListView();
 				}
 				break;
@@ -175,7 +168,7 @@ public class DatabaseActivity extends Activity {
 			return true;
 			
 		case R.id.action_add:
-			Log.i(TAG, "add-button pressend");
+			Log.i(TAG, "add-button pre-send");
 			newEntry();			
 			return true;
 			

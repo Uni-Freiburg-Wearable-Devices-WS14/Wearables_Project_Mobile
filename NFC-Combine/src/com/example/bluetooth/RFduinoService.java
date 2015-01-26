@@ -49,6 +49,7 @@ import android.util.Log;
 import java.util.UUID;
 
 import com.example.nfc_combine.R;
+import com.example.nfc_combine.ReminderService;
 
 /*
  * Adapted from:
@@ -185,7 +186,13 @@ public class RFduinoService extends Service {
             sendBroadcast(intent, Manifest.permission.BLUETOOTH);
             Log.w(TAG,"BTLE Data received and broadcasted");
 
-            // Create notification
+            // Trigger Reminder Service
+            final Intent mReminderIntent = new Intent(getApplicationContext(), ReminderService.class);
+            mReminderIntent.putExtra(ACTION_DATA_AVAILABLE, true);
+            mReminderIntent.putExtra(EXTRA_DATA, characteristic.getValue());
+            getApplicationContext().startService(mReminderIntent);
+
+            // Create notification for new received data
             Intent notificationIntent = new Intent(RFduinoService.this, BluetoothActivity.class);
             notificationIntent.setAction("RFduinoTest_CallToMain");
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

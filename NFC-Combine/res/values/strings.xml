@@ -6,6 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="title">These are your scanned items:</string>
     <string name="action_add">Add new tag -&gt;start Activity!</string>
+    <string name="action_edit">Edit your tag</string>
     <string name="IdLabel">TagID: </string>
     <string name="ID">some numbers</string>
     <string name="NameText">Name</string>

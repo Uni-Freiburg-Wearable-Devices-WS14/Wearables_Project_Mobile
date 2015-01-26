@@ -4,9 +4,9 @@
     android:versionCode="1"
     android:versionName="1.0" >
     
-      <uses-permission android:name="android.permission.NFC"/>
-      <uses-permission android:name="android.permission.BLUETOOTH" />
-      <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     
     <!-- Ensure, that the app only shows up for devices which provide NFC  -->
     <uses-feature android:name="android.hardware.nfc"
@@ -42,10 +42,12 @@
                android:resource="@xml/techlist"/>
            -->
        </activity>
-       <activity android:name="com.example.bluetooth.BluetoothActivity"></activity>
-        
-       
-       <service android:name="com.example.bluetooth.RFduinoService" />
+       <activity android:name="com.example.bluetooth.BluetoothActivity">
+
+       </activity>
+
+        <service android:name="com.example.bluetooth.RFduinoService" />
+        <service android:name=".ReminderService"/>
     </application>
 
 </manifest>
