@@ -25,8 +25,7 @@ public class AddTagActivity extends Activity {
 	private static final String TAG = "AddTagActivity";
 	private Bundle oldData;
 	NfcTag tmpTag;
-	
-//	private Bundle data;blabla
+
 	private DialogFragment mDialog;
 	private Spinner mSpinner;
 	TextView tmpID;

@@ -191,22 +191,6 @@ public class RFduinoService extends Service {
             mReminderIntent.putExtra(ACTION_DATA_AVAILABLE, true);
             mReminderIntent.putExtra(EXTRA_DATA, characteristic.getValue());
             getApplicationContext().startService(mReminderIntent);
-
-            // Create notification for new received data
-            Intent notificationIntent = new Intent(RFduinoService.this, BluetoothActivity.class);
-            notificationIntent.setAction("RFduinoTest_CallToMain");
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(RFduinoService.this, 0, notificationIntent, 0);
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(RFduinoService.this)
-                    .setContentTitle("Bluetooth Data")
-                    .setTicker("New Bluetooth Data Received")
-                    .setContentText("Data:" + HexAsciiHelper.bytesToAsciiMaybe(characteristic.getValue()) + "\nOr: " + HexAsciiHelper.bytesToHex(characteristic.getValue()))
-                    .setSmallIcon(R.drawable.ic_launcher)
-//                    .setLargeIcon(
-                            //                          Bitmap.createScaledBitmap(icon, 128, 128, false))
-                    .setAutoCancel(true)
-                    .setContentIntent(pendingIntent);
-            mNotificationManager.notify(110, mBuilder.build());
         }
     }
 

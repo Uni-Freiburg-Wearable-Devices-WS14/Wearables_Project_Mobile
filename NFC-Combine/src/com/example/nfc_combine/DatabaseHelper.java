@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.*;
 import android.database.sqlite.*;
 import android.util.Log;
@@ -27,6 +28,8 @@ import android.util.Log;
 		public static final String KEY_WEARING = "at_human";
 
         private static final String[] TAG_ID_COLUMN = { KEY_TAG_ID };
+        private static final String[] TAG_CAT_COLUMN = { KEY_CATEGORY };
+        private static final String[] TAG_WEAR = {KEY_TAG_ID, KEY_WEARING};
 		
 		private static final String DATABASE_CREATE = "CREATE TABLE "
 				+ TAG_TABLE_NAME	+ "( " 
@@ -47,7 +50,7 @@ import android.util.Log;
 		@Override
 		public void onCreate(SQLiteDatabase db) {			
 			db.execSQL(DATABASE_CREATE);			
-			Log.i(TAG, "DB oncreate!");
+			Log.i(TAG, "DB onCreate!");
 		}
 
 		@Override
@@ -184,20 +187,51 @@ import android.util.Log;
          * @param mIdToCheck of the status we are looking for
          * @return Type of the TAG
          */
-        public boolean checkIfObject(int mIdToCheck) {
+        public String checkIfObject(int mIdToCheck) {
             SQLiteDatabase db = this.getReadableDatabase(); // Or should it be Writable?
             Cursor mCursor = null;
-            mCursor = db.query(TAG_TABLE_NAME, TAG_ID_COLUMN, KEY_TAG_ID + "=" + mIdToCheck,
+            mCursor = db.query(TAG_TABLE_NAME, TAG_ID_COLUMN, KEY_TAG_ID + " = " + mIdToCheck,
                     null, null, null, null);
-            return mCursor.moveToNext() ? mCursor.getString(0) : null;
-
-
-            return false;
+            return mCursor.moveToNext() ? mCursor.getString(0) : null; //
         }
 
-        /*public ArrayList<NfcTag> getItemsToRemind() {
+        /**
+         * @return List of NfcTag Items to be reminded. If list is empty, means you have all the
+         * objects that you want at the door.
+         */
+        public ArrayList<NfcTag> getItemsToRemind(){
+            SQLiteDatabase db = this.getReadableDatabase();
+            ArrayList<NfcTag> mTagList = new ArrayList<NfcTag>();
+            Cursor mCursor = null;
 
-        }*/
+            Log.i(TAG, "getItemsToRemind()");
+            String[] mCategories = Resources.getSystem().getStringArray(R.array.tag_categories);
+            //Select all entries in db???
+            mCursor = db.rawQuery(" SELECT * FROM " + TAG_TABLE_NAME, null);
+            mCursor = db.query(TAG_TABLE_NAME, TAG_CAT_COLUMN,
+                    KEY_CATEGORY + " = " + mCategories[0] + "AND " + KEY_REMIND + " = TRUE" + KEY_WEARING + " = FALSE",
+                    null,null, null, "ASCENDING");
+
+            if (mCursor.moveToFirst()){
+                do{
+                    NfcTag item = new NfcTag();
+                    item.setItemID(Integer.parseInt(mCursor.getString(0)));
+                    item.setTagID(Integer.parseInt(mCursor.getString(1)));
+                    item.setTagName(mCursor.getString(2));
+                    item.setRemind((Integer.parseInt(mCursor.getString(3)) == 1));
+                    item.setCategory(mCursor.getString(4));
+                    item.setScanDateInMillis(Long.parseLong(mCursor.getString(5)));
+                    item.setWearing((Integer.parseInt(mCursor.getString(6)) == 1)); // You have the object. Change the state of "at human"
+                    mTagList.add(item);
+                }while(mCursor.moveToNext());
+            }
+            if(mCursor != null)
+                mCursor.close();
+            if(db != null)
+                db.close();
+
+            return mTagList;
+        }
 		
 	}
 	
