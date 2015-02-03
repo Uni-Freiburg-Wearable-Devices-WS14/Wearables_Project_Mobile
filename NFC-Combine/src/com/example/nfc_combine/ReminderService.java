@@ -45,7 +45,7 @@ public class ReminderService extends Service {
     	Log.i(TAG, "onStart ReminderService");
 
     	if (mIntent.getBooleanExtra(RFduinoService.ACTION_DATA_SERVICE, false)) {
-            Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
             resolveID(mIntent.getByteArrayExtra(RFduinoService.EXTRA_DATA)); //Get NFC Data
     	}
         else {
@@ -59,16 +59,18 @@ public class ReminderService extends Service {
         int tmpID = getDec(byteArrayExtra);
         String[] tmpArray = getResources().getStringArray(R.array.tag_categories);
         // TODO: Handle Exceptions on DatabaseHelper
-        if(dbHelper.checkIfObject(tmpID).equals(tmpArray[0])) {
-            dbHelper.toggleItem(tmpID);
+        if(dbHelper.checkIfObject(tmpID).equals(tmpArray[0])) { // Is a thing
+            dbHelper.toggleItem(tmpID); // TODO: Need to update the UI in background service
             onMakeNotificationObject("Object Taken", tmpID);
         }
-        else
-        {
+        else { // Is a Door
             List<NfcTag> mRemindList = dbHelper.getItemsToRemind();
+
             if (!mRemindList.isEmpty()) {
+                Log.i(TAG,"List is not Empty");
                 onMakeNotificationList("Items Missing", mRemindList); // List of ids!
             }
+            else {Log.i(TAG,"List is Empty");}
         }
     }
 
@@ -96,11 +98,12 @@ public class ReminderService extends Service {
     }
 
     private void onMakeNotificationObject(CharSequence pTitle,int pId){
-        // Create notification for new received data
+        // Create notification for new received object
         Intent notificationIntent = new Intent(ReminderService.this, DatabaseActivity.class); //Doubt about the main class
         notificationIntent.setAction("ReminderTest_CallToMain");
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(ReminderService.this, 0, notificationIntent, 0);
+
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ReminderService.this)
                 .setContentTitle(pTitle)
                 .setTicker("NFC Tag was read")
@@ -115,7 +118,28 @@ public class ReminderService extends Service {
     }
 
     private void onMakeNotificationList(CharSequence pTitle, List<NfcTag> pList) {
+        Intent notificationIntent = new Intent(ReminderService.this, DatabaseActivity.class); //Doubt about the main class
+        notificationIntent.setAction("ReminderTest_CallToMain");
+        //notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(ReminderService.this, 0, notificationIntent, 0);
 
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        inboxStyle.setBigContentTitle(pTitle); // Sets a title for the Inbox in expanded layout
+
+        // Moves events into the expanded layout
+        for (int i=0; i < pList.size(); i++) {
+            inboxStyle.addLine(pList.get(i).getTagName());
+        }
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ReminderService.this)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("Remember!")
+                .setContentText("Events received")
+                //.setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setStyle(inboxStyle);
+
+        mNotificationManager.notify(101, mBuilder.build());
     }
 
 }

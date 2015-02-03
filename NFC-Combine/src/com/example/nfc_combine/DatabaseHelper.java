@@ -28,7 +28,7 @@ import android.util.Log;
 		public static final String KEY_SCAN = "last_scan";
 		public static final String KEY_WEARING = "at_human";
 
-        private static final String[] TAG_NAME_COLUMN = { KEY_NAME };
+        private static final String[] TAG_REMIND_COLUMN = { KEY_ITEM_ID, KEY_TAG_ID, KEY_NAME, KEY_CATEGORY };
         private static final String[] TAG_CAT_COLUMN = { KEY_CATEGORY };
         private static final String[] TAG_WEAR = {KEY_TAG_ID, KEY_WEARING};
 		
@@ -194,7 +194,14 @@ import android.util.Log;
             Cursor mCursor = null;
             mCursor = db.query(TAG_TABLE_NAME, TAG_CAT_COLUMN, KEY_TAG_ID + " = " + mIdToCheck,
                     null, null, null, null);
-            return mCursor.moveToNext() ? mCursor.getString(0) : ""; //
+            String result = mCursor.moveToNext() ? mCursor.getString(0) : "";
+
+            if(mCursor != null) { mCursor.close(); }
+
+            if(db != null) { db.close(); }
+
+
+            return result; //
         }
 
         /**
@@ -209,8 +216,8 @@ import android.util.Log;
             Log.i(TAG, "getItemsToRemind()");
             String[] mCategories = mRes.getStringArray(R.array.tag_categories);
 
-            mCursor = db.query(TAG_TABLE_NAME, TAG_NAME_COLUMN,
-                    KEY_CATEGORY + " = '" + mCategories[0] + "' AND " + KEY_REMIND + " = 'TRUE' AND " + KEY_WEARING + " = 'FALSE'",
+            mCursor = db.query(TAG_TABLE_NAME, TAG_REMIND_COLUMN,
+                    KEY_CATEGORY + " = '" + mCategories[0] + "' AND " + KEY_REMIND + " = '1' AND " + KEY_WEARING + " = '0'",
                     null,null, null, KEY_NAME + " ASC");
 
             if (mCursor.moveToFirst()){
@@ -219,10 +226,7 @@ import android.util.Log;
                     item.setItemID(Integer.parseInt(mCursor.getString(0)));
                     item.setTagID(Integer.parseInt(mCursor.getString(1)));
                     item.setTagName(mCursor.getString(2));
-                    item.setRemind((Integer.parseInt(mCursor.getString(3)) == 1));
-                    item.setCategory(mCursor.getString(4));
-                    item.setScanDateInMillis(Long.parseLong(mCursor.getString(5)));
-                    item.setWearing((Integer.parseInt(mCursor.getString(6)) == 1)); // You have the object. Change the state of "at human"
+                    item.setCategory(mCursor.getString(3));
                     mTagList.add(item);
                 }while(mCursor.moveToNext());
             }
