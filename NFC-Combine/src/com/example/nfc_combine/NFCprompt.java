@@ -33,9 +33,7 @@ public class NFCprompt extends DialogFragment{
 		
 		prompt.setCanceledOnTouchOutside(false);
 //		prompt.setCancelable(false);
-			
-		
-		
+
 		return prompt;
 	}
 	

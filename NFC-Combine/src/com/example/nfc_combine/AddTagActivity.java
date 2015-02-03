@@ -3,7 +3,12 @@ package com.example.nfc_combine;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -18,6 +23,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.bluetooth.RFduinoService;
+
+import org.apache.http.impl.cookie.RFC2109DomainHandler;
+
 
 // The Activity, which gets called, when I want to add or edit a Tag
 public class AddTagActivity extends Activity {
@@ -30,11 +39,38 @@ public class AddTagActivity extends Activity {
 	private Spinner mSpinner;
 	TextView tmpID;
 	EditText tmpName;
-	private PendingIntent mPending;
+
+    private BluetoothAdapter bteAdapter;
+    private BluetoothDevice bteDevice;
+
+    private PendingIntent mPending;
 	private NfcAdapter mNFCadapter;
 	private Boolean newElement;
 	private DatabaseHelper db;
-	
+
+    private final BroadcastReceiver rfduinoReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            Log.w("Main","rfduinoReceiver called with " + action);
+            if (RFduinoService.ACTION_DATA_AVAILABLE.equals(action)) {
+                Log.i(TAG, "BTE Dialog Dismiss");
+                byte[] id = intent.getByteArrayExtra(RFduinoService.EXTRA_DATA);
+                if(id != null) {
+                    int tmp = getDec(id);
+                    if (db.idCheck(tmp)) tmpID.setText(Integer.toString(tmp));
+                    else {
+                        Toast errorToast = Toast.makeText(getApplicationContext(),
+                                "You already have a Tag with this ID in your database", Toast.LENGTH_SHORT);
+                        errorToast.show();
+                        finish();
+                    }
+                }
+                mDialog.dismiss();
+            }
+        }
+    };
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 				
@@ -82,14 +118,13 @@ public class AddTagActivity extends Activity {
 			new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);			
 		}				
 	}
-	
-	
+
 	protected void onNewIntent(Intent intent){
 		super.onNewIntent(intent);
 		if(newElement){
 			setIntent(intent);
 			Log.i(TAG, "in onNewIntent!");
-			
+
 			if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){					
 			Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
@@ -123,18 +158,13 @@ public class AddTagActivity extends Activity {
 		}		
 	}
 
-
-
-
-
-	private boolean checkTech(Tag mtag) {
-		String[] techlist = mtag.getTechList();
+	private boolean checkTech(Tag pTag) {
+		String[] techlist = pTag.getTechList();
 		for(String tech : techlist){
 			if(tech.equals(NfcA.class.getName())) return true;
 		}		
 		return false;
 	}
-
 
 	private int getDec(byte[] bytes) {		
 	int result = 0;
@@ -169,9 +199,7 @@ public class AddTagActivity extends Activity {
 		setResult(RESULT_OK, returnIntent);
 		finish();
 	}
-	
-	
-	
+
 	public void onClick(View v){
 		
 		switch(v.getId()){
@@ -187,6 +215,20 @@ public class AddTagActivity extends Activity {
 			break;
 		}
 	}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.w("Main","onStart called");
+        registerReceiver(rfduinoReceiver, RFduinoService.getIntentFilter());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+//        bteAdapter.stopLeScan(this);
+        unregisterReceiver(rfduinoReceiver);
+    }
 	
 	public void onPause(){
 		super.onPause();

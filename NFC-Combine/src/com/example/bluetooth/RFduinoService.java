@@ -71,6 +71,8 @@ public class RFduinoService extends Service {
             "com.rfduino.ACTION_DISCONNECTED";
     public final static String ACTION_DATA_AVAILABLE =
             "com.rfduino.ACTION_DATA_AVAILABLE";
+    public final static String ACTION_DATA_SERVICE =
+            "com.rfduino.ACTION_DATA_SERVICE";
     public final static String EXTRA_DATA =
             "com.rfduino.EXTRA_DATA";
 
@@ -188,7 +190,7 @@ public class RFduinoService extends Service {
 
             // Trigger Reminder Service
             final Intent mReminderIntent = new Intent(getApplicationContext(), ReminderService.class);
-            mReminderIntent.putExtra(ACTION_DATA_AVAILABLE, true);
+            mReminderIntent.putExtra(ACTION_DATA_SERVICE, true);
             mReminderIntent.putExtra(EXTRA_DATA, characteristic.getValue());
             getApplicationContext().startService(mReminderIntent);
         }
@@ -371,7 +373,6 @@ public class RFduinoService extends Service {
         return filter;
     }
 
-
     // Extension stuff to handle btle connection here
 
     @Override
@@ -438,7 +439,6 @@ public class RFduinoService extends Service {
 
         return START_STICKY;
     }
-
 
     private void upgradeState(int newState) {
         if (newState > state) {

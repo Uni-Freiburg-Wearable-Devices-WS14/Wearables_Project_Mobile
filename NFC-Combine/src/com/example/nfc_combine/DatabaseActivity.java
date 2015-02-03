@@ -38,7 +38,7 @@ public class DatabaseActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-				
+        Log.i(TAG, "onCreate()");
 		LayoutInflater inflater = LayoutInflater.from(this);
 		View v = inflater.inflate(R.layout.database_main, null);
 		setContentView(v);				
@@ -64,14 +64,12 @@ public class DatabaseActivity extends Activity {
 	
 	public void refreshListView() {		
 		tagList = db.getAllItems();
-		
 		ArrayAdapter<NfcTag> mAdapter = new TagAdapter(DatabaseActivity.this, 
 				R.layout.tag_item, tagList);
 		lv.setAdapter(mAdapter);
 	}
 
-	
-	public void newEntry(){		
+	public void newEntry(){
 		Intent clickIntent = new Intent(DatabaseActivity.this, AddTagActivity.class);
 		startActivityForResult(clickIntent, NEW_TAG_REQUEST);
 	}
@@ -125,7 +123,7 @@ public class DatabaseActivity extends Activity {
 				break;
 				
 			case EDIT_TAG_REQUEST:
-				//TODO
+				//TODO: Change method to just use the Item, avoids too many calls to NfcTag
 				data = values.getExtras();
 				if(data != null){
 					mTag.setItemID(data.getInt("item_id"));

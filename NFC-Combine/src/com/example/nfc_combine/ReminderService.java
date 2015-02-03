@@ -42,10 +42,10 @@ public class ReminderService extends Service {
 
     @Override
     public int onStartCommand(Intent mIntent, int flags, int startId) {
-    	Log.i(TAG, "onStartCommand()");
-        Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
+    	Log.i(TAG, "onStart ReminderService");
 
-    	if (mIntent.getBooleanExtra(RFduinoService.ACTION_DATA_AVAILABLE, false)) {
+    	if (mIntent.getBooleanExtra(RFduinoService.ACTION_DATA_SERVICE, false)) {
+            Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
             resolveID(mIntent.getByteArrayExtra(RFduinoService.EXTRA_DATA)); //Get NFC Data
     	}
         else {
@@ -57,7 +57,10 @@ public class ReminderService extends Service {
 
     private void resolveID(byte[] byteArrayExtra) {
         int tmpID = getDec(byteArrayExtra);
-        if(dbHelper.checkIfObject(tmpID) == Resources.getSystem().getStringArray(R.array.tag_categories)[0]) {
+        String[] tmpArray = getResources().getStringArray(R.array.tag_categories);
+        // TODO: Handle Exceptions on DatabaseHelper
+        if(dbHelper.checkIfObject(tmpID).equals(tmpArray[0])) {
+            dbHelper.toggleItem(tmpID);
             onMakeNotificationObject("Object Taken", tmpID);
         }
         else

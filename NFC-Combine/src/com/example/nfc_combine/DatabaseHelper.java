@@ -16,6 +16,7 @@ import android.util.Log;
 		private static final String DB_FILENAME = "tagDB";
 		private static final int DB_VERSION = 1;
 		private static final String TAG_TABLE_NAME = "tags";
+        private static Resources mRes;
 		//for debugging
 		private static final String TAG = "DatabaseAdapter";
 		
@@ -27,7 +28,7 @@ import android.util.Log;
 		public static final String KEY_SCAN = "last_scan";
 		public static final String KEY_WEARING = "at_human";
 
-        private static final String[] TAG_ID_COLUMN = { KEY_TAG_ID };
+        private static final String[] TAG_NAME_COLUMN = { KEY_NAME };
         private static final String[] TAG_CAT_COLUMN = { KEY_CATEGORY };
         private static final String[] TAG_WEAR = {KEY_TAG_ID, KEY_WEARING};
 		
@@ -43,7 +44,8 @@ import android.util.Log;
 									+ ")";
 		
 		public DatabaseHelper(Context context){
-			super(context, DB_FILENAME, null, DB_VERSION);	
+			super(context, DB_FILENAME, null, DB_VERSION);
+            mRes = context.getResources();
 			Log.i(TAG, "DB constructor");
 		}
 
@@ -185,14 +187,14 @@ import android.util.Log;
 
         /**
          * @param mIdToCheck of the status we are looking for
-         * @return Type of the TAG
+         * @return String with the type of the TAG
          */
         public String checkIfObject(int mIdToCheck) {
             SQLiteDatabase db = this.getReadableDatabase(); // Or should it be Writable?
             Cursor mCursor = null;
-            mCursor = db.query(TAG_TABLE_NAME, TAG_ID_COLUMN, KEY_TAG_ID + " = " + mIdToCheck,
+            mCursor = db.query(TAG_TABLE_NAME, TAG_CAT_COLUMN, KEY_TAG_ID + " = " + mIdToCheck,
                     null, null, null, null);
-            return mCursor.moveToNext() ? mCursor.getString(0) : null; //
+            return mCursor.moveToNext() ? mCursor.getString(0) : ""; //
         }
 
         /**
@@ -205,12 +207,11 @@ import android.util.Log;
             Cursor mCursor = null;
 
             Log.i(TAG, "getItemsToRemind()");
-            String[] mCategories = Resources.getSystem().getStringArray(R.array.tag_categories);
-            //Select all entries in db???
-            mCursor = db.rawQuery(" SELECT * FROM " + TAG_TABLE_NAME, null);
-            mCursor = db.query(TAG_TABLE_NAME, TAG_CAT_COLUMN,
-                    KEY_CATEGORY + " = " + mCategories[0] + "AND " + KEY_REMIND + " = TRUE" + KEY_WEARING + " = FALSE",
-                    null,null, null, "ASCENDING");
+            String[] mCategories = mRes.getStringArray(R.array.tag_categories);
+
+            mCursor = db.query(TAG_TABLE_NAME, TAG_NAME_COLUMN,
+                    KEY_CATEGORY + " = '" + mCategories[0] + "' AND " + KEY_REMIND + " = 'TRUE' AND " + KEY_WEARING + " = 'FALSE'",
+                    null,null, null, KEY_NAME + " ASC");
 
             if (mCursor.moveToFirst()){
                 do{
@@ -232,8 +233,27 @@ import android.util.Log;
 
             return mTagList;
         }
-		
-	}
+
+        /**
+         * @return Number of changed rows
+         */
+        public int toggleItem(int tmpID) {
+            int rows = 0;
+            Log.i(TAG, "toggleItem()");
+            SQLiteDatabase db = getWritableDatabase();
+
+            ContentValues values = new ContentValues();//putting the data into a value container
+            //values.put(KEY_NAME, item.getTagName());
+            values.put(KEY_WEARING, 1);
+
+            rows = db.update(TAG_TABLE_NAME, values, KEY_TAG_ID + " = ?",
+                    new String[] {String.valueOf(tmpID)});
+
+            Log.i(TAG, "Rows Updated = " + String.valueOf(rows));
+            if(db != null) db.close();
+            return rows;
+        }
+    }
 	
 		
 

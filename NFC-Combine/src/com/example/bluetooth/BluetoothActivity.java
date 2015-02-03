@@ -324,7 +324,6 @@ public class BluetoothActivity extends Activity implements BluetoothAdapter.LeSc
         if(state <= STATE_DISCONNECTED) {
             updateState(bluetoothAdapter.isEnabled() ? STATE_DISCONNECTED : STATE_BLUETOOTH_OFF);
         }
-
     }
 
     @Override
