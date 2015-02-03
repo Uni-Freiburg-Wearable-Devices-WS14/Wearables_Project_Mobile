@@ -170,7 +170,7 @@ public class BluetoothActivity extends Activity implements BluetoothAdapter.LeSc
         int flags = inti.getFlags();
         if((inti.getAction().equals("RFduinoTest_CallToMain")) || (serviceInForeground))
         {
-            Log.w("Main", "Return from notifictation");
+            Log.w("Main", "Return from notification");
             Intent stopForegroundIntent = new Intent(getApplicationContext(), RFduinoService.class);
             stopForegroundIntent.setAction("RFduinoService_StopForeground");
             getApplicationContext().startService(stopForegroundIntent);

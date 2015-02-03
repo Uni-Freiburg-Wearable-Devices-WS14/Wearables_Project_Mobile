@@ -106,13 +106,11 @@ public class AddTagActivity extends Activity {
 			tmpName.setText(tmpTag.getTagName());
 			mSpinner.setSelection(adapter.getPosition(tmpTag.getCategory()));
 			
-		} else{
+		} else { // new Item - Create an empty layout
 			Log.i(TAG, "new Tag, wait for scan!!!");
 			newElement = true;
-			//show the prompt to scan a Tag
-			mDialog = NFCprompt.newInstance();
+			mDialog = NFCprompt.newInstance(); //show the prompt to scan a Tag
 			mDialog.show(getFragmentManager(), "NFCprompt");
-			
 			mNFCadapter = NfcAdapter.getDefaultAdapter(this);
 			mPending = PendingIntent.getActivity(this, 0, 
 			new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);			
@@ -219,7 +217,7 @@ public class AddTagActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.w("Main","onStart called");
+        Log.w("AddTagActivity","onStart called");
         registerReceiver(rfduinoReceiver, RFduinoService.getIntentFilter());
     }
 

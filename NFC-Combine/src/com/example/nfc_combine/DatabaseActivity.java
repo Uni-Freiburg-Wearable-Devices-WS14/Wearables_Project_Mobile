@@ -4,13 +4,13 @@ package com.example.nfc_combine;
 import java.util.ArrayList;
 
 import com.example.bluetooth.BluetoothActivity;
-import com.example.nfc_combine.DatabaseHelper;
 
-import android.app.ActionBar;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,14 +27,12 @@ public class DatabaseActivity extends Activity {
 	private static final String TAG = "MainActivity";
 	private static final int NEW_TAG_REQUEST = 1;
 	private static final int EDIT_TAG_REQUEST = 2;
-//	NFC_Adapter mAdapter;
 
 	private ArrayList<NfcTag> tagList;
-	private ListView lv;
+	private ListView mListView;
 	private DatabaseHelper db;
 	private Button bltBtn;
-//	private TextView header;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -45,7 +43,7 @@ public class DatabaseActivity extends Activity {
 		tagList = new ArrayList<NfcTag>();
 		db = new DatabaseHelper(this);
 		
-		lv = (ListView) findViewById(R.id.tagList);
+		mListView = (ListView) findViewById(R.id.tagList);
 		
 		refreshListView();
 		
@@ -60,13 +58,12 @@ public class DatabaseActivity extends Activity {
 			}
 		});
 	}
-
 	
 	public void refreshListView() {		
 		tagList = db.getAllItems();
 		ArrayAdapter<NfcTag> mAdapter = new TagAdapter(DatabaseActivity.this, 
 				R.layout.tag_item, tagList);
-		lv.setAdapter(mAdapter);
+		mListView.setAdapter(mAdapter);
 	}
 
 	public void newEntry(){
@@ -143,7 +140,6 @@ public class DatabaseActivity extends Activity {
 		}
 	}
 	
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -174,4 +170,25 @@ public class DatabaseActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(onReceiverFromService, new IntentFilter(ReminderService.BROADCAST_UPDATEUI));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(onReceiverFromService);
+    }
+
+    // TODO: NOT SURE IF ALSO REGISTER/UNREGISTER THE RECEIVER ON PAUSE/RESUME
+
+    private BroadcastReceiver onReceiverFromService = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context pContext, Intent pIntent) {
+            refreshListView();
+        }
+    };
 }

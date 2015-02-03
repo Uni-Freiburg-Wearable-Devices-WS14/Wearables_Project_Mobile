@@ -1,6 +1,7 @@
 package com.example.nfc_combine;
 
 import android.Manifest;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -9,6 +10,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -28,9 +31,11 @@ import com.example.nfc_combine.R;
 public class ReminderService extends Service {
 
     private final static String TAG = ReminderService.class.getSimpleName();
+    public final static String BROADCAST_UPDATEUI = "UpdateUI";
 	private final static int mStartMode = Service.START_NOT_STICKY;
     private DatabaseHelper dbHelper;
     private NotificationManager mNotificationManager;
+    private Intent g_sIntent = new Intent(BROADCAST_UPDATEUI);
 
     @Override
     public void onCreate() {
@@ -59,11 +64,14 @@ public class ReminderService extends Service {
         int tmpID = getDec(byteArrayExtra);
         String[] tmpArray = getResources().getStringArray(R.array.tag_categories);
         // TODO: Handle Exceptions on DatabaseHelper
-        if(dbHelper.checkIfObject(tmpID).equals(tmpArray[0])) { // Is a thing
-            dbHelper.toggleItem(tmpID); // TODO: Need to update the UI in background service
-            onMakeNotificationObject("Object Taken", tmpID);
+        String mObjectCat = dbHelper.checkIfObject(tmpID);
+        if(mObjectCat.equals(tmpArray[0])) { // Is a thing
+            String mObjectName = dbHelper.toggleItem(tmpID);
+
+            onMakeNotificationObject("Object Taken", tmpID, mObjectName);
+            sendBroadcast(g_sIntent);
         }
-        else { // Is a Door
+        else if (mObjectCat.equals(tmpArray[1])) { // Is a Door - Necessary due to SEND ZERO Option
             List<NfcTag> mRemindList = dbHelper.getItemsToRemind();
 
             if (!mRemindList.isEmpty()) {
@@ -97,7 +105,7 @@ public class ReminderService extends Service {
         Toast.makeText(this,"Service Stopped", Toast.LENGTH_LONG).show();
     }
 
-    private void onMakeNotificationObject(CharSequence pTitle,int pId){
+    private void onMakeNotificationObject(CharSequence pTitle,int pId, String pItemName){
         // Create notification for new received object
         Intent notificationIntent = new Intent(ReminderService.this, DatabaseActivity.class); //Doubt about the main class
         notificationIntent.setAction("ReminderTest_CallToMain");
@@ -107,7 +115,7 @@ public class ReminderService extends Service {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ReminderService.this)
                 .setContentTitle(pTitle)
                 .setTicker("NFC Tag was read")
-                .setContentText("Data: " + pId)
+                .setContentText("Data: " + pId + "-Name: " + pItemName)
 //                .setContentText("Data:" + HexAsciiHelper.bytesToAsciiMaybe(characteristic.getValue()) + "\nOr: " + HexAsciiHelper.bytesToHex(characteristic.getValue()))
                 .setSmallIcon(R.drawable.ic_launcher)
 //                    .setLargeIcon(
@@ -119,9 +127,11 @@ public class ReminderService extends Service {
 
     private void onMakeNotificationList(CharSequence pTitle, List<NfcTag> pList) {
         Intent notificationIntent = new Intent(ReminderService.this, DatabaseActivity.class); //Doubt about the main class
-        notificationIntent.setAction("ReminderTest_CallToMain");
-        //notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(ReminderService.this, 0, notificationIntent, 0);
+        notificationIntent.setAction("ReminderList_CallToMain");
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(ReminderService.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Uri mAlarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle(pTitle); // Sets a title for the Inbox in expanded layout
@@ -134,12 +144,15 @@ public class ReminderService extends Service {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ReminderService.this)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("Remember!")
-                .setContentText("Events received")
-                //.setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .setStyle(inboxStyle);
+                .setContentText("It's dangerous to go alone, take this!")
+                .setTicker("Don't forget!!")
+                .setDefaults(Notification.DEFAULT_VIBRATE)
+                .setSound(mAlarmSound)
+                .setAutoCancel(true)
+                .setStyle(inboxStyle)
+                .setContentIntent(pendingIntent);
 
-        mNotificationManager.notify(101, mBuilder.build());
+        mNotificationManager.notify(100, mBuilder.build());
     }
 
 }

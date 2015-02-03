@@ -30,7 +30,7 @@ import android.util.Log;
 
         private static final String[] TAG_REMIND_COLUMN = { KEY_ITEM_ID, KEY_TAG_ID, KEY_NAME, KEY_CATEGORY };
         private static final String[] TAG_CAT_COLUMN = { KEY_CATEGORY };
-        private static final String[] TAG_WEAR = {KEY_TAG_ID, KEY_WEARING};
+        private static final String[] TAG_NAME_COLUMN = { KEY_NAME };
 		
 		private static final String DATABASE_CREATE = "CREATE TABLE "
 				+ TAG_TABLE_NAME	+ "( " 
@@ -156,9 +156,8 @@ import android.util.Log;
 					item.setCategory(cursor.getString(4));
 					item.setScanDateInMillis(Long.parseLong(cursor.getString(5)));
 					item.setWearing((Integer.parseInt(cursor.getString(6)) == 1) ? true:false);
-					
 					tagList.add(item);
-				}while(cursor.moveToNext());
+				} while (cursor.moveToNext());
 			}
 			if(cursor!= null)
 				cursor.close();
@@ -239,9 +238,9 @@ import android.util.Log;
         }
 
         /**
-         * @return Number of changed rows
+         * @return Name of changed Item
          */
-        public int toggleItem(int tmpID) {
+        public String toggleItem(int tmpID) {
             int rows = 0;
             Log.i(TAG, "toggleItem()");
             SQLiteDatabase db = getWritableDatabase();
@@ -254,8 +253,16 @@ import android.util.Log;
                     new String[] {String.valueOf(tmpID)});
 
             Log.i(TAG, "Rows Updated = " + String.valueOf(rows));
-            if(db != null) db.close();
-            return rows;
+
+            Cursor mCursor = null;
+            mCursor = db.query(TAG_TABLE_NAME, TAG_NAME_COLUMN, KEY_TAG_ID + " = " + tmpID,
+                    null, null, null, null);
+            String result = mCursor.moveToNext() ? mCursor.getString(0) : "";
+
+            if(mCursor != null) { mCursor.close(); }
+
+            if(db != null) { db.close(); }
+            return result;
         }
     }
 	
