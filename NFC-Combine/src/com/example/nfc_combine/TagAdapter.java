@@ -52,11 +52,6 @@ public class TagAdapter extends ArrayAdapter<NfcTag> {
             holder.wearingIndicator = (RadioButton) convertView.findViewById(R.id.wearingIndicator);
             holder.wearingIndicator.setEnabled(false);
 			holder.main = (RelativeLayout) convertView.findViewById(R.id.item);			
-			
-//			holder.wearingIndicator.setChecked(tagList.get(position).isWearing());			
-//			Log.i(TAG, "wearingIndicator: " + tagList.get(position).isWearing());
-//			holder.reminder.setChecked(tagList.get(position).shouldRemind());
-//			Log.i(TAG, "reminder state: " + tagList.get(position).shouldRemind());
 
             NfcTag tempTag = tagList.get(position);
 

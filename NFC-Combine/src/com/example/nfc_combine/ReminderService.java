@@ -15,6 +15,8 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.NotificationCompat.WearableExtender;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -23,10 +25,13 @@ import com.example.bluetooth.RFduinoService;
 import com.example.nfc_combine.DatabaseHelper; // To Read from DB and Change Reminder
 import com.example.bluetooth.BluetoothActivity; // For the Receiving Broadcast coming from BT
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.UUID; // Not so sure
 
 import com.example.nfc_combine.R;
+
+import org.apache.http.util.ByteArrayBuffer;
 
 public class ReminderService extends Service {
 
@@ -34,7 +39,7 @@ public class ReminderService extends Service {
     public final static String BROADCAST_UPDATEUI = "UpdateUI";
 	private final static int mStartMode = Service.START_NOT_STICKY;
     private DatabaseHelper dbHelper;
-    private NotificationManager mNotificationManager;
+    private NotificationManagerCompat mNotificationManager;
     private Intent g_sIntent = new Intent(BROADCAST_UPDATEUI);
 
     @Override
@@ -42,7 +47,8 @@ public class ReminderService extends Service {
         Log.i(TAG, "onCreate()");
         super.onCreate();
         dbHelper = new DatabaseHelper(getApplicationContext());
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        //mNotificationManager = (NotificationManagerCompat) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = NotificationManagerCompat.from(this);
     }
 
     @Override
@@ -62,6 +68,10 @@ public class ReminderService extends Service {
 
     private void resolveID(byte[] byteArrayExtra) {
         int tmpID = getDec(byteArrayExtra);
+        /*Log.i(TAG, HexAsciiHelper.bytesToAsciiMaybe(byteArrayExtra));
+        Log.i(TAG, HexAsciiHelper.bytesToHex(byteArrayExtra));
+        Log.i(TAG, String.valueOf(tmpID));
+        Log.i(TAG, byteArrayExtra.toString());*/
         String[] tmpArray = getResources().getStringArray(R.array.tag_categories);
         // TODO: Handle Exceptions on DatabaseHelper
         String mObjectCat = dbHelper.checkIfObject(tmpID);
@@ -140,13 +150,13 @@ public class ReminderService extends Service {
         for (int i=0; i < pList.size(); i++) {
             inboxStyle.addLine(pList.get(i).getTagName());
         }
-
+        //.setDefaults(Notification.DEFAULT_VIBRATE)
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ReminderService.this)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("Remember!")
                 .setContentText("It's dangerous to go alone, take this!")
                 .setTicker("Don't forget!!")
-                .setDefaults(Notification.DEFAULT_VIBRATE)
+                .setVibrate(new long[] {0, 1000, 5, 200})
                 .setSound(mAlarmSound)
                 .setAutoCancel(true)
                 .setStyle(inboxStyle)
