@@ -248,11 +248,17 @@ import android.util.Log;
             ContentValues values = new ContentValues();//putting the data into a value container
             //values.put(KEY_NAME, item.getTagName());
             values.put(KEY_WEARING, 1);
-
+            // replaced by toggle code below
+/*
             rows = db.update(TAG_TABLE_NAME, values, KEY_TAG_ID + " = ?",
                     new String[] {String.valueOf(tmpID)});
 
             Log.i(TAG, "Rows Updated = " + String.valueOf(rows));
+  */
+            String sqlQuery = "UPDATE " + TAG_TABLE_NAME + "SET " + KEY_WEARING +
+                    " = CASE WHEN " + KEY_WEARING + " = 0 THEN 1 ELSE 0 END WHERE "
+                    + KEY_TAG_ID + " = " + String.valueOf(tmpID);
+            db.execSQL(sqlQuery);
 
             Cursor mCursor = null;
             mCursor = db.query(TAG_TABLE_NAME, TAG_NAME_COLUMN, KEY_TAG_ID + " = " + tmpID,
