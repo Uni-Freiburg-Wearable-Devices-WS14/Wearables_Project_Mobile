@@ -15,7 +15,7 @@ public class NFCprompt extends DialogFragment{
 
 	public Dialog onCreateDialog(Bundle savedInstanceState){		
 		AlertDialog prompt = new AlertDialog.Builder(getActivity())
-		.setMessage("Please scan a Tag with your phone...")		
+		.setMessage("Please scan a Tag with your phone or the scanner...")		
 		.setCancelable(false)	
 		.setNegativeButton("Leave", 
 				new DialogInterface.OnClickListener(){

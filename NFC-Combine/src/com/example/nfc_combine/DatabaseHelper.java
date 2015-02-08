@@ -35,7 +35,7 @@ import android.util.Log;
 		private static final String DATABASE_CREATE = "CREATE TABLE "
 				+ TAG_TABLE_NAME	+ "( " 
 				+ KEY_ITEM_ID		+ " INTEGER PRIMARY KEY AUTOINCREMENT, "
-				+ KEY_TAG_ID		+ " INTEGER, "
+				+ KEY_TAG_ID		+ " STRING, "
 				+ KEY_NAME			+ " STRING, "
 				+ KEY_REMIND		+ " INTEGER, "
 				+ KEY_CATEGORY		+ " STRING, "
@@ -150,7 +150,7 @@ import android.util.Log;
 				do{
 					NfcTag item = new NfcTag();
 					item.setItemID(Integer.parseInt(cursor.getString(0)));
-					item.setTagID(Integer.parseInt(cursor.getString(1)));
+					item.setTagID(cursor.getString(1));
 					item.setTagName(cursor.getString(2));
 					item.setRemind((Integer.parseInt(cursor.getString(3)) == 1) ? true:false);
 					item.setCategory(cursor.getString(4));
@@ -167,17 +167,18 @@ import android.util.Log;
 			return tagList;		
 		}
 
-		public boolean idCheck(int newId) {
+		public boolean idCheck(String newId) {
 			SQLiteDatabase db = this.getReadableDatabase();
 			Cursor cursor = null;
+			Log.i(TAG, "idCheck()");
 			cursor = db.rawQuery(" SELECT * FROM " + TAG_TABLE_NAME, null);
 			
 			if(cursor.moveToFirst()){
 				do{					
-					int oldId = cursor.getInt(cursor.getColumnIndex(KEY_TAG_ID));
-					Log.i(TAG, "id to check: " + Integer.valueOf(newId).toString() + 
-							" actual id: " + Integer.valueOf(oldId).toString());
-					if(oldId == newId) return false;
+					String oldId = cursor.getString(cursor.getColumnIndex(KEY_TAG_ID));
+					Log.i(TAG, "id to check: " + newId + 
+							" actual id: " + oldId);
+					if(oldId.equals(newId)) return false;
 				} while(cursor.moveToNext());
 				
 			}
@@ -188,10 +189,12 @@ import android.util.Log;
          * @param mIdToCheck of the status we are looking for
          * @return String with the type of the TAG
          */
-        public String checkIfObject(int mIdToCheck) {
+        public String checkIfObject(String mIdToCheck) {
             SQLiteDatabase db = this.getReadableDatabase(); // Or should it be Writable?
             Cursor mCursor = null;
-            mCursor = db.query(TAG_TABLE_NAME, TAG_CAT_COLUMN, KEY_TAG_ID + " = " + mIdToCheck,
+            Log.i(TAG, "checkIfObject()");
+         
+            mCursor = db.query(TAG_TABLE_NAME, TAG_CAT_COLUMN, KEY_TAG_ID + " = '" + mIdToCheck + "' ",
                     null, null, null, null);
             String result = mCursor.moveToNext() ? mCursor.getString(0) : "";
 
@@ -223,7 +226,7 @@ import android.util.Log;
                 do{
                     NfcTag item = new NfcTag();
                     item.setItemID(Integer.parseInt(mCursor.getString(0)));
-                    item.setTagID(Integer.parseInt(mCursor.getString(1)));
+                    item.setTagID(mCursor.getString(1));
                     item.setTagName(mCursor.getString(2));
                     item.setCategory(mCursor.getString(3));
                     mTagList.add(item);
@@ -240,26 +243,48 @@ import android.util.Log;
         /**
          * @return Name of changed Item
          */
-        public String toggleItem(int tmpID) {
+        public String toggleItem(String tmpID) {
             int rows = 0;
             Log.i(TAG, "toggleItem()");
             SQLiteDatabase db = getWritableDatabase();
 
             String sqlQuery = "UPDATE " + TAG_TABLE_NAME + " SET " + KEY_WEARING +
                     " = CASE WHEN " + KEY_WEARING + " = 0 THEN 1 ELSE 0 END WHERE "
-                    + KEY_TAG_ID + " = " + String.valueOf(tmpID);
+                    + KEY_TAG_ID + " = '" + tmpID + "' ";
             //sqlQuery = UPDATE tags SET at_human = CASE WHEN at_human = 0 THEN 1 ELSE 0 END WHERE tag_id = tmpID;
-            db.execSQL(sqlQuery);
+            db.execSQL(sqlQuery);            
 
             Cursor mCursor = null;
-            mCursor = db.query(TAG_TABLE_NAME, TAG_NAME_COLUMN, KEY_TAG_ID + " = " + tmpID,
+            mCursor = db.query(TAG_TABLE_NAME, TAG_NAME_COLUMN, KEY_TAG_ID + " = '" + tmpID + "' ",
                     null, null, null, null);
             String result = mCursor.moveToNext() ? mCursor.getString(0) : "";
 
             if(mCursor != null) { mCursor.close(); }
 
             if(db != null) { db.close(); }
+            Log.i(TAG, "toggled " + result);
             return result;
+        }
+        
+        public NfcTag getItemByID(String mID){
+        	NfcTag item = new NfcTag();
+        	SQLiteDatabase db = getReadableDatabase();
+        	Cursor mCursor = null;
+        	
+        	mCursor = db.query(TAG_TABLE_NAME, null, KEY_TAG_ID + " = '" + mID + "' ", 
+        			null, null, null, null);
+        	
+        	if(mCursor.moveToFirst()){
+        		do{
+        		  
+                  item.setItemID(Integer.parseInt(mCursor.getString(0)));
+                  item.setTagID(mCursor.getString(1));
+                  item.setTagName(mCursor.getString(2));
+                  item.setCategory(mCursor.getString(3));
+        		}while(mCursor.moveToNext());
+        	}       	
+        	Log.i(TAG, item.getTagName());
+        	return item;
         }
     }
 	

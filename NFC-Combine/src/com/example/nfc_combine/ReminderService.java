@@ -56,29 +56,31 @@ public class ReminderService extends Service {
     	Log.i(TAG, "onStart ReminderService");
 
     	if (mIntent.getBooleanExtra(RFduinoService.ACTION_DATA_SERVICE, false)) {
+    		Log.i(TAG, "onStart ReminderService ResolveID");
             //Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
             resolveID(mIntent.getByteArrayExtra(RFduinoService.EXTRA_DATA)); //Get NFC Data
     	}
         else {
             // TODO: KILL Service?? Given that it hasn't read anything
+        	Log.i(TAG, "stopped");
             stopSelf();
         }
     	return mStartMode;
     }
 
     private void resolveID(byte[] byteArrayExtra) {
-        int tmpID = getDec(byteArrayExtra);
-        /*Log.i(TAG, HexAsciiHelper.bytesToAsciiMaybe(byteArrayExtra));
+//        int tmpID = getDec(byteArrayExtra);
+    	String hexID = HexAsciiHelper.bytesToAsciiMaybe(byteArrayExtra);
+        Log.i(TAG, HexAsciiHelper.bytesToAsciiMaybe(byteArrayExtra));
         Log.i(TAG, HexAsciiHelper.bytesToHex(byteArrayExtra));
-        Log.i(TAG, String.valueOf(tmpID));
-        Log.i(TAG, byteArrayExtra.toString());*/
+//        Log.i(TAG, String.valueOf(tmpID));
+        Log.i(TAG, byteArrayExtra.toString());
         String[] tmpArray = getResources().getStringArray(R.array.tag_categories);
         // TODO: Handle Exceptions on DatabaseHelper
-        String mObjectCat = dbHelper.checkIfObject(tmpID);
+        String mObjectCat = dbHelper.checkIfObject(hexID);
         if(mObjectCat.equals(tmpArray[0])) { // Is a thing
-            String mObjectName = dbHelper.toggleItem(tmpID);
-
-            onMakeNotificationObject("Object Taken", tmpID, mObjectName);
+            String mObjectName = dbHelper.toggleItem(hexID);            
+            onMakeNotificationObject("Object touched", hexID, mObjectName);
             sendBroadcast(g_sIntent);
         }
         else if (mObjectCat.equals(tmpArray[1])) { // Is a Door - Necessary due to SEND ZERO Option
@@ -109,13 +111,17 @@ public class ReminderService extends Service {
         return null;
     }
 
+    
+    
     @Override
     public void onDestroy(){
         super.onDestroy();
+        Log.i(TAG, "service destroyed");
         Toast.makeText(this,"Service Stopped", Toast.LENGTH_LONG).show();
     }
 
-    private void onMakeNotificationObject(CharSequence pTitle,int pId, String pItemName){
+    //TODO String ID
+    private void onMakeNotificationObject(CharSequence pTitle,String pId, String pItemName){
         // Create notification for new received object
         Intent notificationIntent = new Intent(ReminderService.this, DatabaseActivity.class); //Doubt about the main class
         notificationIntent.setAction("ReminderTest_CallToMain");

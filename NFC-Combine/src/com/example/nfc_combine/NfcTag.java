@@ -16,7 +16,7 @@ public class NfcTag {
 	
 	//fields of the Tag Item
 	private int itemID;
-	private int tagID;
+	private String tagID;
 	private String tagName;
 	private boolean remindMe;
 	private long scanDate;
@@ -25,7 +25,7 @@ public class NfcTag {
 	
 	public NfcTag(){ ; }
 	
-	public NfcTag(int itemID, int tagID, String tagName, boolean remindMe,
+	public NfcTag(int itemID, String tagID, String tagName, boolean remindMe,
 			long scanDate, boolean atHuman, String category){
 		super();
 		this.itemID = itemID;
@@ -45,11 +45,11 @@ public class NfcTag {
 		this.itemID = itemId;
 	}
 	
-	public int getTagID(){
+	public String getTagID(){
 		return tagID;
 	}
 	
-	public void setTagID(int id){
+	public void setTagID(String id){
 		this.tagID = id;
 	}
 	

@@ -77,7 +77,7 @@ public class DatabaseActivity extends Activity {
 		
 		//put all actual values to the Bundle
 		data.putInt("item_id", mTag.getItemID());
-		data.putInt("tag_id", mTag.getTagID());
+		data.putString("tag_id", mTag.getTagID());
 		data.putString("tag_name", mTag.getTagName());
 		data.putBoolean("reminder", mTag.shouldRemind());
 		data.putLong("last_scan", mTag.getScanDateInMillis());
@@ -107,7 +107,7 @@ public class DatabaseActivity extends Activity {
 				//TODO: Make successful writing of a Tag
 				data = values.getExtras();
 				if(data != null){
-					mTag.setTagID(data.getInt("tag_id"));
+					mTag.setTagID(data.getString("tag_id"));
 					Log.i(TAG, "TagID: " + Integer.valueOf(data.getInt("tag_id")).toString());
 					mTag.setTagName(data.getString("tag_name"));
 					mTag.setCategory(data.getString("tag_category"));
@@ -124,7 +124,7 @@ public class DatabaseActivity extends Activity {
 				data = values.getExtras();
 				if(data != null){
 					mTag.setItemID(data.getInt("item_id"));
-					mTag.setTagID(data.getInt("tag_id"));
+					mTag.setTagID(data.getString("tag_id"));
 					mTag.setTagName(data.getString("tag_name"));
 					mTag.setRemind(data.getBoolean("reminder"));
 					mTag.setScanDateInMillis(data.getLong("last_scan"));
