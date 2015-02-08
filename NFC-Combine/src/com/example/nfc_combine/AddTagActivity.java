@@ -54,11 +54,15 @@ public class AddTagActivity extends Activity {
     private final BroadcastReceiver rfduinoReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             final String action = intent.getAction();
             Log.w("Main","rfduinoReceiver called with " + action);
-            if (RFduinoService.ACTION_DATA_AVAILABLE.equals(action)) {
+            setResultData("");
+            if (RFduinoService.ACTION_DATA_AVAILABLE.equals(action) && intent.getBooleanExtra(RFduinoService.ACTION_DATA_TAG,false)) {
+
                 Log.i(TAG, "BTE Dialog Dismiss");
                 byte[] id = intent.getByteArrayExtra(RFduinoService.EXTRA_DATA);
+                setResultData("Tag_Activity");
                 if(id != null) {
 //                    int tmp = getDec(id);
 //                	int tmp = HexAsciiHelper.bytesToDec(id);
@@ -253,16 +257,18 @@ public class AddTagActivity extends Activity {
     protected void onStop() {
         super.onStop();
 //        bteAdapter.stopLeScan(this);
-        unregisterReceiver(rfduinoReceiver);
+        //unregisterReceiver(rfduinoReceiver);
     }
 	
 	public void onPause(){
 		super.onPause();
+        unregisterReceiver(rfduinoReceiver);
 		if(newElement) mNFCadapter.disableForegroundDispatch(this);	
 	}
 	
 	public void onResume(){
 		super.onResume();
+        registerReceiver(rfduinoReceiver, RFduinoService.getIntentFilter());
 		if(newElement) mNFCadapter.enableForegroundDispatch(this, mPending, null, null);	
 	}
 	

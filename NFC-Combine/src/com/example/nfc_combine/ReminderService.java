@@ -71,8 +71,8 @@ public class ReminderService extends Service {
     private void resolveID(byte[] byteArrayExtra) {
 //        int tmpID = getDec(byteArrayExtra);
     	String hexID = HexAsciiHelper.bytesToAsciiMaybe(byteArrayExtra);
-        Log.i(TAG, HexAsciiHelper.bytesToAsciiMaybe(byteArrayExtra));
-        Log.i(TAG, HexAsciiHelper.bytesToHex(byteArrayExtra));
+        //Log.i(TAG, HexAsciiHelper.bytesToAsciiMaybe(byteArrayExtra));
+        //Log.i(TAG, HexAsciiHelper.bytesToHex(byteArrayExtra));
 //        Log.i(TAG, String.valueOf(tmpID));
         Log.i(TAG, byteArrayExtra.toString());
         String[] tmpArray = getResources().getStringArray(R.array.tag_categories);

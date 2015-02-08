@@ -24,6 +24,7 @@
 package com.example.bluetooth;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -42,6 +43,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -71,6 +73,8 @@ public class RFduinoService extends Service {
             "com.rfduino.ACTION_DISCONNECTED";
     public final static String ACTION_DATA_AVAILABLE =
             "com.rfduino.ACTION_DATA_AVAILABLE";
+    public final static String ACTION_DATA_TAG =
+            "com.rfduino.ACTION_DATA_TAG";
     public final static String ACTION_DATA_SERVICE =
             "com.rfduino.ACTION_DATA_SERVICE";
     public final static String EXTRA_DATA =
@@ -91,6 +95,7 @@ public class RFduinoService extends Service {
     final private static int STATE_CONNECTED = 4;
 
     private int state;
+    private Boolean mServiceStart = true;
 
     private BluetoothDevice bluetoothDevice;
 
@@ -185,14 +190,27 @@ public class RFduinoService extends Service {
         if (UUID_RECEIVE.equals(characteristic.getUuid())) {
             final Intent intent = new Intent(action);
             intent.putExtra(EXTRA_DATA, characteristic.getValue());
-            sendBroadcast(intent, Manifest.permission.BLUETOOTH);
-            Log.w(TAG,"BTLE Data received and broadcasted");
+            sendBroadcast(intent, Manifest.permission.BLUETOOTH); // Left it, to avoid modify BluetoothActivty due to time constraints
+            mServiceStart = true;
+            intent.putExtra(ACTION_DATA_TAG,true);
+            sendOrderedBroadcast(intent, Manifest.permission.BLUETOOTH, new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context pContext, Intent pIntent) {
+                    //String pResultData = getResultData();
+                    if (getResultData()!=null && getResultData().equals("Tag_Activity")){
+                        mServiceStart = false;
+                    }
+                }
+            } ,null, Activity.RESULT_OK, null, null);
+            Log.w(TAG, "BTLE Data received and Broadcasted");
 
             // Trigger Reminder Service
-            final Intent mReminderIntent = new Intent(getApplicationContext(), ReminderService.class);
-            mReminderIntent.putExtra(ACTION_DATA_SERVICE, true);
-            mReminderIntent.putExtra(EXTRA_DATA, characteristic.getValue());
-            getApplicationContext().startService(mReminderIntent);
+            if(mServiceStart) {
+                final Intent mReminderIntent = new Intent(getApplicationContext(), ReminderService.class);
+                mReminderIntent.putExtra(ACTION_DATA_SERVICE, true);
+                mReminderIntent.putExtra(EXTRA_DATA, characteristic.getValue());
+                getApplicationContext().startService(mReminderIntent);
+            }
         }
     }
 
