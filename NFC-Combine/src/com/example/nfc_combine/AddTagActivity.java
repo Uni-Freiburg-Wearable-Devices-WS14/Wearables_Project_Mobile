@@ -126,9 +126,22 @@ public class AddTagActivity extends Activity {
 			mDialog.show(getFragmentManager(), "NFCprompt");
 			mNFCadapter = NfcAdapter.getDefaultAdapter(this);
 			mPending = PendingIntent.getActivity(this, 0, 
-			new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);			
+			new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);		
+			
 		}				
 	}
+	
+//	@Override
+//	public void onBackPressed(){
+//		if(mDialog.isVisible()){
+//			Log.i(TAG, "back pressed with dialog!");
+//			mDialog.dismiss();
+//			finish();
+//		} else{
+//			Log.i(TAG, "back pressed withOUT dialog!");
+//			super.onBackPressed();
+//		}
+//	}
 
 	protected void onNewIntent(Intent intent){
 		super.onNewIntent(intent);

@@ -169,6 +169,7 @@ public class RFduinoService extends Service {
                                          BluetoothGattCharacteristic characteristic,
                                          int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
+            	Log.w(TAG, "onCharacteristicRead()");
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             }
         }
@@ -176,6 +177,7 @@ public class RFduinoService extends Service {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
+        	Log.w(TAG, "onCharacteristicChanged()");
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
         }
     };
@@ -190,7 +192,7 @@ public class RFduinoService extends Service {
         if (UUID_RECEIVE.equals(characteristic.getUuid())) {
             final Intent intent = new Intent(action);
             intent.putExtra(EXTRA_DATA, characteristic.getValue());
-            sendBroadcast(intent, Manifest.permission.BLUETOOTH); // Left it, to avoid modify BluetoothActivty due to time constraints
+            //sendBroadcast(intent, Manifest.permission.BLUETOOTH); // Left it, to avoid modify BluetoothActivty due to time constraints
             mServiceStart = true;
             intent.putExtra(ACTION_DATA_TAG,true);
             sendOrderedBroadcast(intent, Manifest.permission.BLUETOOTH, new BroadcastReceiver() {
@@ -199,18 +201,28 @@ public class RFduinoService extends Service {
                     //String pResultData = getResultData();
                     if (getResultData()!=null && getResultData().equals("Tag_Activity")){
                         mServiceStart = false;
+                        Log.wtf(TAG, "StartService false");
                     }
+                    
+                    // Trigger Reminder Service
+                    if(mServiceStart) {
+                        final Intent mReminderIntent = new Intent(getApplicationContext(), ReminderService.class);
+                        mReminderIntent.putExtra(ACTION_DATA_SERVICE, true);
+                        mReminderIntent.putExtra(EXTRA_DATA, characteristic.getValue());
+                        getApplicationContext().startService(mReminderIntent);
+                    }
+                    
                 }
             } ,null, Activity.RESULT_OK, null, null);
             Log.w(TAG, "BTLE Data received and Broadcasted");
 
-            // Trigger Reminder Service
-            if(mServiceStart) {
-                final Intent mReminderIntent = new Intent(getApplicationContext(), ReminderService.class);
-                mReminderIntent.putExtra(ACTION_DATA_SERVICE, true);
-                mReminderIntent.putExtra(EXTRA_DATA, characteristic.getValue());
-                getApplicationContext().startService(mReminderIntent);
-            }
+//            // Trigger Reminder Service
+//            if(mServiceStart) {
+//                final Intent mReminderIntent = new Intent(getApplicationContext(), ReminderService.class);
+//                mReminderIntent.putExtra(ACTION_DATA_SERVICE, true);
+//                mReminderIntent.putExtra(EXTRA_DATA, characteristic.getValue());
+//                getApplicationContext().startService(mReminderIntent);
+//            }
         }
     }
 

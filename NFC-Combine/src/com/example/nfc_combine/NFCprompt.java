@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 
 public class NFCprompt extends DialogFragment{
 	
@@ -16,7 +17,17 @@ public class NFCprompt extends DialogFragment{
 	public Dialog onCreateDialog(Bundle savedInstanceState){		
 		AlertDialog prompt = new AlertDialog.Builder(getActivity())
 		.setMessage("Please scan a Tag with your phone or the scanner...")		
-		.setCancelable(false)	
+		.setCancelable(false)
+		.setOnKeyListener(new DialogInterface.OnKeyListener() {
+			
+			@Override
+			public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+				if(keyCode == KeyEvent.KEYCODE_BACK){
+					getActivity().finish();
+				}
+				return false;
+			}
+		})
 		.setNegativeButton("Leave", 
 				new DialogInterface.OnClickListener(){
 
